@@ -5,7 +5,7 @@ import Css exposing (..)
 import Html exposing (Html, button, div, input, text)
 import Html.Attributes exposing (placeholder, value)
 import Html.Events exposing (onClick, onInput)
-import Maybe.Extra exposing (isNothing)
+import Maybe.Extra exposing (isJust, isNothing)
 
 
 
@@ -39,6 +39,7 @@ init =
         [ Part "this is cool" 1 Nothing
         , Part "this is cooler" 2 Nothing
         , Part "I agree" 3 (Just 1)
+        , Part "yes" 4 (Just 1)
         ]
     , newPart = ""
     }
@@ -76,9 +77,20 @@ update msg model =
 -- View
 
 
-renderPart : Part -> Html Msg
-renderPart part =
-    div [] [ text (String.fromInt part.id ++ ": " ++ part.content) ]
+commentCount : Int -> List Part -> Int
+commentCount parentId parts =
+    List.length
+        (List.filter
+            (\p ->
+                Maybe.withDefault False (Maybe.map (\id -> id == parentId) p.parentId)
+            )
+            parts
+        )
+
+
+renderPart : Part -> List Part -> Html Msg
+renderPart part parts =
+    div [] [ text (String.fromInt part.id ++ ": " ++ part.content ++ " (" ++ String.fromInt (commentCount part.id parts) ++ ")") ]
 
 
 onlyParents : Part -> Bool
@@ -89,7 +101,7 @@ onlyParents part =
 view : Model -> Html Msg
 view model =
     div []
-        [ div [] (List.map renderPart <| List.filter onlyParents model.parts)
+        [ div [] (List.map (\p -> renderPart p model.parts) <| List.filter onlyParents model.parts)
         , div []
             [ input [ placeholder "Enter text", value model.newPart, onInput Change ] []
             , button [ onClick Save ] [ text "Save" ]
