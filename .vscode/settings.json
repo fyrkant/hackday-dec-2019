@@ -1,0 +1,7 @@
+{
+  "elm.compiler": "/usr/local/bin/elm",
+  "elm.makeCommand": "/usr/local/bin/elm-make",
+  "gotoSymbolStack.currentStackPosition": 0,
+  "gotoSymbolStack.maxStackPosition": 0,
+  "gotoSymbolStack.filePositionInfo": []
+}
